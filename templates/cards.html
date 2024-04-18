@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block links %}
+    <a href="{{url_for('index')}}">Home</a>
+    <a href="{{url_for('about')}}">About</a>
+    {% if 'username' in session %}
+        <a href="{{url_for('stats')}}">Statistics</a>
+    {% endif %}
+{% endblock links %}
+
+
+{% block content %}
+<div class="search-container">
+    <form class="search-bar" method="get">
+        <input type="text" placeholder="Search by name..." name="q" value="{{search_string}}"/>
+        <button type="submit" class="animated-search">
+            <span class="material-symbols-outlined">
+                search
+                </span>
+        </button>
+    </form> 
+</div>
+    <div class="all-cards">
+        {% for card in cards %}
+        <div id="card-front">
+            <p id ="card-title">{{cards[card]['title']}}</p>
+            <div><img src="{{ url_for('get_image', filename=cards[card]['title'] + '.jpeg') }}"></div>
+            {% for attribute in cards[card] %}
+                
+                {% if attribute!='title' and attribute!="id" %}
+                    <p style="text-transform:capitalize">{{attribute}}: <span id="value">{{cards[card][attribute]}}</span></p>    
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    
+{% endblock content %}
+    

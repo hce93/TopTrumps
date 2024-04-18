@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block links %}
+    <a href="{{url_for('index')}}">Home</a>
+    <a href="{{url_for('about')}}">About</a>
+    <a href="{{url_for('cards')}}">Cards</a>
+{% endblock links %}
+
+
+{% block content %}
+    
+<div class="user-info">
+        
+    <p><b>Username:</b> <i>{{user_info.username}}</i> <b>Date Joined:</b> <i>{{user_info.date_joined}}</i></p>
+    {% if user_info.msg %}
+        <span id="user-msg">{{user_info.msg}} </span>
+    {% endif %}
+
+</div>
+<div class="chart-div">
+
+    <div id="user-chart-area">
+        <h2 id="user-title">Your Stats</h2>
+        <div class="canvas-container">
+            <canvas id="userChart" class="canvas"></canvas>
+        </div>
+    </div>
+    <div id="computer-chart-area">
+        <h2>Computer Stats (all time)</h2>
+        <div class="canvas-container">
+            <canvas id="computerChart" class="canvas"></canvas>
+        </div>
+    </div>
+    <div id="leaderboard-chart-area">
+        <h2>All Time Leaderboards</h2>
+        <div class="canvas-container">
+            <div class="win">
+            <canvas id="winChart" class="canvas"></canvas>
+            </div>
+            <div class="loss">
+            <canvas id="lossChart" class="canvas"></canvas>
+            </div>
+            <div class="draw">
+            <canvas id="drawChart" class="canvas"></canvas>
+            <div>
+        </div>
+    </div>
+
+<div>
+{% endblock content %}
+    
+
+{% block javascript %}
+    <script>
+        //data for user stats
+        var stats = {{stats|tojson}};
+        var userLabels = Object.keys(stats)
+        var userValues = Object.values(stats)
+
+
+        var computer_stats = {{computer_stats|tojson}}
+        var computerLabels = Object.keys(computer_stats)
+        var computerValues = Object.values(computer_stats)
+
+        //data for overall wins, losses, draws leaderboard
+        var wins = {{wins|tojson}};
+        var winsSorted=Object.keys(wins).map((label, index)=>({label, value:wins[label]})).sort((a, b) => b.value - a.value);
+        var winsLabels = winsSorted.map(item => item.label);
+        var winsValues = winsSorted.map(item => item.value);
+        
+        var losses = {{losses|tojson}};
+        var lossesSorted=Object.keys(wins).map((label, index)=>({label, value:losses[label]})).sort((a, b) => b.value - a.value);
+        var lossesLabels = lossesSorted.map(item => item.label);
+        var lossesValues = lossesSorted.map(item => item.value);
+
+        var draws = {{draws|tojson}};
+        var drawsLabels = Object.keys(draws);
+        var drawsValues = Object.values(draws);
+
+        // build charts
+        var userChart = buildChart("userChart", userLabels, userValues, "Your Record", 'x', true)
+        var winChart = buildChart("winChart", winsLabels, winsValues, "Winning Leaderboard", 'y', true)
+        var lossChart = buildChart("lossChart", lossesLabels, lossesValues, "Losing Leaderboard", 'y', true)
+        var drawChart = buildChart("drawChart", drawsLabels, drawsValues, "Drawing Leaderboard", 'y', true)
+        var computerChart = buildChart("computerChart", computerLabels, computerValues, "Computer Record", 'x', true)
+
+        var canvas = document.getElementsByClassName("canvas")
+        console.log(canvas)
+
+
+        function buildChart(id, labels, data, title, indexAxis, aspect){
+            return new Chart(id, {
+                type:'bar',
+                data:{
+                    labels:labels,
+                    datasets:[{
+                        data:data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins:{
+                        legend:{
+                            display:false
+                        },
+                        title:{
+                            display:true,
+                            text:title
+                        },
+                    },
+                    indexAxis:indexAxis,
+                    maintainAspectRatio:false,
+                    responsive:true,
+                    aspectRatio:3,
+                    scales:{
+                        x:{
+                            ticks:{
+                                stepSize:1
+                            },
+                            gridLines:{
+                                display:false
+                            }
+                        },
+                        y:{
+                            ticks:{
+                                stepSize:1
+                            },
+                            gridLines:{
+                                display:false
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
+    </script>
+{% endblock javascript %}

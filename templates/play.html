@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block links %}
+    <a href="{{url_for('index')}}">Home</a>
+    <a href="{{url_for('about')}}">About</a>
+    <a href="{{url_for('cards')}}">Cards</a>
+    {% if 'username' in session %}
+        <a href="{{url_for('stats')}}">Statistics</a>
+    {% endif %}
+{% endblock links %}
+
+{% block content %}
+    <div class="message-holder">
+        <div class="notification" id="notification"></div>
+        <div id="continue-button-holder"></div>
+    </div>
+    
+    <div id="coin-flip" class="center">
+        <p>To start the game, please choose heads or tails:</p>
+        <button class="btn btn-secondary" value="heads" onclick="coinFlip(this)">Heads</button>
+        <button class="btn btn-secondary" value="tails" onclick="coinFlip(this)">Tails</button>
+    </div>
+    <div class="game-holder" id="game-holder" hidden>
+        <div id="counts">
+            <div class="count-holder">
+                <div id="player-count"></div>
+                <div class="turn-indicator" id="player-turn-indicator">x</div>
+            </div>
+            <div class="count-holder">
+                <div id="computer-count"></div>
+                <div class="turn-indicator" id="computer-turn-indicator"></div>
+            </div>
+        </div>
+        <div class="card-holder">
+            <div class="card" id="player-card">
+                
+                <div class="player-front" id="player-front"></div>
+                <div class="player-back" id="player-back">
+                    <p class="title" id="card-top-title">TOP</p>
+                    <p class="title" id="card-bottom-title">TRUMPS</p>
+                </div>                
+            </div>
+            <div class="card" id="computer-card">
+                
+                <div class="computer-front" id="computer-front"></div>
+                <div class="computer-back" id="computer-back">
+                    <p class="title" id="card-top-title">TOP</p>
+                    <p class="title" id="card-bottom-title">TRUMPS</p>
+                </div>
+            </div>
+        </div>
+       <div class="center">
+            <p><span class="material-symbols-outlined">brightness_empty</span> indicates players turn</p>
+       </div>
+    </div>
+    
+    <div class="reset-div center" id="reset" hidden>
+        <a class="center" href="{{url_for('reset')}}"><button class="btn btn-secondary">Reset Game</button></a>
+    </div>
+{% endblock content %}
+    
+
+{% block javascript %}
+    <script>
+        var playerTurn = true;
+        var notification;
+
+        // coin flip to start the game
+        function coinFlip(element){
+            var value = element.value            
+            var flip = Math.random()<0.5 ? "tails" : "heads";
+            if (flip == value){
+                alert("It's " + flip + " you go first")
+            } else{
+                alert("It's " + flip + " the computer is first")
+                playerTurn=false
+            }
+            document.getElementById("coin-flip").hidden=true;
+            document.getElementById("game-holder").hidden=false;
+            document.getElementById("reset").hidden=false;
+            showCards(false)
+        }
+
+        // main function to continue game and display next cards for the user
+        function showCards(winner, msg=""){
+            // make computer card blank
+            displayTurnIndicator()
+            // logic if there is an overall winner
+            if(winner){
+                document.getElementById("reset").hidden=true;
+                document.getElementById("game-holder").innerHTML=`<div id="winning-message" class="center">
+                    <p>`+msg+`</p><p> Please choose one of the below options:</p>
+                    <a class="center" href="{{url_for('reset')}}"><button class="btn btn-secondary">Reset Game</button></a>
+                    <a class="center" href="{{url_for('index')}}"><button class="btn btn-secondary">Go Home</button></a>
+                    </div>`
+                document.getElementById("notification").innerHTML = ``;
+                document.getElementById("continue-button-holder").innerHTML=``;
+            // below continues the game
+            } else {
+                // Send get request to get latest player card. Then display user card
+                fetchCardsJson("GET").then(data=>{
+                    var nextPlayerCard = data.player_cards
+                    let continue_button_html = ``
+
+                    var tag=`p onclick=handleClick(this)`
+
+                    if (playerTurn==false){
+                        tag=`p`;
+                        continue_button_html=`<button onclick=handleClick() class="btn btn-secondary">Continue</button>`
+                    }
+                    document.getElementById("continue-button-holder").innerHTML=continue_button_html
+                    document.getElementById("player-front").innerHTML=getCardHTML(nextPlayerCard, playerTurn, true)
+                    setCardAttribNum()
+                    //populate images
+                    document.getElementById('cardImage').src = "{{ url_for('get_image', filename='') }}" + 
+                                                                nextPlayerCard["title"] + '.jpeg';
+
+                    populateCardCounts(data.count["player_count"], data.count["computer_count"])
+                    document.getElementById("player-card").classList.toggle("flip")
+                })
+            }
+        }  
+
+        // set number of card attributes below for dynamic styling so attributes will fit into card
+        function setCardAttribNum(){
+            var card_content = document.getElementById('player-front')
+            var no_of_paragraphs = card_content.querySelectorAll('p').length
+            document.documentElement.style.setProperty('--p-count', no_of_paragraphs)
+        }
+
+        // generate html for card attributes
+        function getCardHTML(card, user_turn=false, user_display=false){
+            var tag = user_turn?`p onclick=handleClick(this)`:`p`
+            var card_tag = user_display? "cardImage" : "computerCardImage";
+            var html =
+            `<p id="card-title">` + card["title"] + `</p>
+            <div><img src="" id="` + card_tag + `"/></div>`;
+            var skill_class = (user_display&&user_turn) ? "skill ":"";
+            for (attribute in card){
+                if(attribute=="id" || attribute=="title"){
+                    // pass
+                } else{
+                    html += `<`+tag+` id="` + attribute + `" class="` + skill_class + attribute + `">` + attribute.charAt(0).toUpperCase() + 
+                     attribute.slice(1) + `: <span id="value">` + card[attribute] + `</span></p>`;
+                }
+            }
+            return html;
+        }
+
+        function displayTurnIndicator(){
+            let html=`<span class="material-symbols-outlined">brightness_empty</span>`
+            let player_turn_element = document.getElementById("player-turn-indicator")
+            let computer_turn_element = document.getElementById("computer-turn-indicator")
+            player_turn_element.innerHTML = playerTurn ? html : ``
+            computer_turn_element.innerHTML = playerTurn ? `` : html
+        }
+
+        // funciton to generate html for live card counts
+        function populateCardCounts(player_count, computer_count){
+            let player_count_html =``
+            let computer_count_html =``
+            for(let i =0; i<player_count; i++){
+                player_count_html+=`<span class="material-symbols-outlined">pen_size_2</span>`
+            }
+            
+            for(let i =0; i<computer_count; i++){
+                computer_count_html+=`<span class="material-symbols-outlined">pen_size_2</span>`
+            }
+            let player_card_count = document.getElementById("player-count")
+            player_card_count.innerHTML=player_count_html
+            let computer_card_count = document.getElementById("computer-count")
+            computer_card_count.innerHTML=computer_count_html
+        }
+
+        // function to display computer card after the skill is chosen by the player or computer
+        function showComputerCard(card=null, display=false, bold_field=null, player_turn=false){
+            computer_card = document.getElementById("computer-front")
+            if (display){
+                computer_card.innerHTML=getCardHTML(card)
+                setCardAttribNum()
+                var imageUrl = "{{ url_for('get_image', filename='') }}" + card["title"] + '.jpeg';
+                document.getElementById('computerCardImage').src = imageUrl;
+                var computerMessage = document.getElementById("notification");
+                let continue_button_html = ``
+                if(!player_turn){
+                    var computerTurnStatement=`<p>The computer has chosen to play `+ bold_field + `.</p>`;
+                    computerMessage.innerHTML = computerTurnStatement
+                    continue_button_html=`<button onclick=progress() class="btn btn-secondary">Continue</button>`
+                } else {
+                    var computerTurnStatement=`<p>You have chosen to play `+ bold_field +
+                        `. The computer's card is `+ card["title"]+`.</p>`;
+                    computerMessage.innerHTML = computerTurnStatement
+                    continue_button_html=`<button onclick=progress("`+bold_field+`") class="btn btn-secondary">Continue</button>`
+                }
+                document.getElementById("continue-button-holder").innerHTML=continue_button_html
+                document.getElementById("computer-card").classList.toggle("flip")
+            } 
+
+            if(bold_field){
+                makeClassBoldUnderline(bold_field)
+            }
+        }
+
+        function populateNotification(winner){
+            if(winner=="DRAW"){
+                return `<p>You drew that round. The cards have gone to the middle. </p>`
+            } else if(winner) {
+                return `<p>You won that round! Please choose your next play. </p>`
+            }else{
+                return `<p>You lost. It's the computer's turn. </p>`
+            }
+        }
+
+        // handles first stage of round when skill chosen or computer card displayed
+        function handleClick(element=null){
+            // handle click when players turn and they have chosen a skill
+            if(element){
+                var skill_chosen = element.id
+                fetchCardsJson("GET").then(data=>{    
+                    showComputerCard(data.computer_card, true, skill_chosen, true)
+                })
+                // remove onclick element so user cannot change skill choice
+                var skill_elements = document.getElementsByClassName("skill")
+                for(var element in skill_elements){
+                    skill_elements[element].onclick=null;
+                }
+
+                
+            } else {
+                // handle displaying computer card and selecting skill for computer
+                fetchCardsJson("POST", {"computer_turn":true,"display":true}).then(data=>{
+                    showComputerCard(data.computer_card, true, data.field)
+                    return data
+                })
+            }
+        }
+
+        // handles second stage of round 
+        function progress(skill=null){
+            document.getElementById("computer-card").classList.toggle("flip")
+            // progress game when players turn once skill has been chosen and computer card shown
+            if(skill){
+                var skill_chosen = skill
+                fetchCardsJson("POST", {"skill":skill_chosen}).then(data=>{
+                    document.getElementById("notification").innerHTML = populateNotification(data.user_win)
+                    if(data.user_win != "DRAW"){
+                        playerTurn=data.user_win
+                    }
+                    if(data.winner.winner){
+                        showCards(true, data.winner.msg)
+                    } else{
+                        document.getElementById("player-card").classList.toggle("flip")
+                        showCards(false)
+                    }
+                })
+            } else{
+                // progress game when computers turn once card shown and skill chosen
+                document.getElementById("player-card").classList.toggle("flip")
+                fetchCardsJson("POST", {"computer_turn":true}).then(data=>{
+                    document.getElementById("notification").innerHTML = populateNotification(data.user_win)
+                    if(data.user_win==true){
+                        playerTurn=true;
+                    }
+                    if(data.winner.winner){
+                        showCards(true, data.winner.msg)
+                    } else{
+                        showCards(false)
+                    }
+                })
+            }
+        }  
+
+        // function to fetch latest cards from app
+        function fetchCardsJson(method, body=""){
+            if(method=="GET"){
+                return fetch('/continue_game').then(response=>response.json())
+            } else {
+                return fetch('/continue_game',{
+                    method:"POST",
+                    body:JSON.stringify(body),
+                    headers:{
+                        "Content-type":"application/json; charset=UTF-8"
+                    }
+                }).then(response=>response.json())
+            }
+        }
+        
+        function makeClassBoldUnderline(field){
+            var bold_field = document.getElementsByClassName(field)
+            for(var i=0; i<bold_field.length; i++){
+                bold_field[i].style.fontWeight='bold'
+                bold_field[i].style.textDecoration='underline'
+            }
+        }
+
+    </script>
+{% endblock javascript %}
+    

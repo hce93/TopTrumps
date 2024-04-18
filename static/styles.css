@@ -1,0 +1,525 @@
+:root{
+    --mustard: rgba(204, 204, 40, 0.902);
+    --blue: rgba(47, 77, 198, 0.902);
+    --cream:rgb(254, 252, 247); /*background*/
+    --banner:rgba(142, 210, 255);
+    --skill-hover:rgba(142, 210, 255, 0.3);
+    /* --card-colour: rgba(168, 23, 23, 0.728); */
+    --card-colour: rgb(254, 252, 247);
+    --card-border: rgba(47, 77, 198, 0.902);
+    /* --card-border: rgba(230, 95, 16, 0.728); */
+    --message-colour: rgba(142, 210, 255, 0.25);
+    --card-text:rgba(47, 77, 198, 0.902);
+}
+
+body{
+    background-color: var(--cream) !important;
+}
+
+main{
+    height:85vh;
+    margin-top: 15px;
+    min-height: 525px;
+}
+
+header{
+    height:75px;
+}
+
+.top-banner{
+    background-color:var(--banner);
+    box-shadow: 0px 5px 15px var(--banner);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    z-index: 1;
+}
+
+.menu-banner{
+    position: absolute;
+    right:0;
+    margin-right:4%;
+    width:30%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.menu-title{
+    text-align: center;
+}
+
+.menu-title > #top-title{
+    margin-bottom: -1.6rem;
+}
+
+.menu-title > p{
+    font-size: 2rem;
+}
+
+.menu-banner > a {
+    color: var(--blue);
+}
+
+.message-holder{
+    height:12%;
+    min-height: 80px;
+    margin:auto;
+    text-align: center;
+    display:flex;
+    flex-direction: column;
+
+}
+
+.message-holder > .notification{
+    margin-bottom: 5px;
+    height:30%;
+}
+
+.message-holder > div > p{
+    margin:0
+}
+
+
+.game-holder{
+    display:block;
+    /* height:80%; */
+    min-height:350px;
+}
+
+.card-holder{
+    display: flex;
+    justify-content: center;
+    /* margin: 0 0 2rem 0; */
+    height:100%;
+    background-color: transparent;
+}
+
+.card{
+    border:0 !important; 
+}
+
+#player-card, #computer-card{
+    position:relative;
+    width:min(42vh, 42vw);
+    height:min(60vh, 60vw);
+    transition:transform 0.8s;
+    transform-style: preserve-3d;
+    margin:0 2%;
+    min-height: 350px;
+    min-width: 242px;
+}
+
+.flip{
+    transform: rotateY(180deg)
+}
+
+#player-front, #player-back, #computer-front, #computer-back{
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    position:absolute;
+    width:100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#card-front, #player-front, #player-back, #computer-front, #computer-back{
+    border:1rem solid var(--card-border);
+    background-color: var(--card-colour);
+    box-shadow: grey 2px 2px 5px;
+    border-radius: 20px;
+}
+
+#card-front, #player-front, #computer-front{
+    color: var(--cream);
+    
+}
+
+#player-front, #computer-front{
+    transform: rotateY(180deg);
+    overflow:auto;
+}
+
+#card-front{
+    width: min(35vh, 35vw);
+    min-width: 175px;
+    height: min(50vh, 50vw);
+    min-height: 265px;
+    margin: 1%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.5% 0;
+}
+
+#card-front>div, #player-front>div, #computer-front>div{
+    height: 50%;
+    min-height: 111px;
+    display:flex;
+    
+}
+
+#card-front>div>img, #cardImage, #computerCardImage{
+    margin:auto;
+    height:100%;
+    width:70%;
+    object-fit:cover;
+    object-position:40% 10%;
+    border-radius: 20px;;
+}
+
+#player-front > p, #computer-front> p, #card-front> p{
+    text-align: center;
+    padding:0;
+    height:calc(50%/var(--p-count));
+    font-size: 95%;
+    margin: 0;
+    align-content: center;
+    color: var(--card-text)
+}
+
+/* #player-front > div, #computer-front > div{
+    height:50%;
+    padding-bottom: 2%;
+    display:flex;
+} */
+
+#player-back, #computer-back{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+#player-back > .title, #computer-back > .title{
+    font-size: 4rem;
+    text-align: center;
+}
+
+#card-top-title{
+    transform: rotate(-5deg);
+    margin-bottom: -3rem;
+}
+
+.hide{
+    display:none !important
+}
+
+#coin-flip > *{
+    align-items: center;
+}
+
+#coin-flip > p{
+    color: var(--blue);
+}
+
+#home-div{
+    height:70%;
+    align-content:center;
+}
+
+#home-div > p{
+    color: var(--blue)
+}
+
+#coin-flip{
+    height:50%;
+    align-content:center;
+}
+
+.btn{
+    margin:0 2rem;
+    width:8rem;
+    height:3rem
+}
+
+.text{
+    display:flex;
+    justify-content: center;
+    width:90%;
+}
+
+.flip{
+    transform: rotateY(180deg);
+    transition: transform 0.5s;
+}
+
+.title{
+    color: var(--blue);
+    font-size: 6rem;
+    margin:0;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.card > div > .title{
+    color: var(--banner)
+}
+
+#top-title{
+    transform: rotate(-5deg);
+    margin-bottom: -4rem;
+}
+
+.center{
+    text-align: center;
+}
+
+.btn-secondary{
+    background-color: var(--card-border) !important;
+    border-color: var(--card-border) !important;
+}
+
+p{
+    white-space: pre;
+}
+
+#notification > p{
+    white-space: pre-line;
+    color: var(--blue)
+}
+
+#winning-message{
+    text-align: center;
+}
+
+#counts{
+    display:flex;
+    justify-content: center;
+}
+
+.count-holder{
+    position:relative;
+    width:min(42vh, 42vw);
+    min-width: 242px;
+    margin:0 2%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#player-count > span, #computer-count > span{
+    width:min(1vw, 1vh);
+    min-width: 6px;
+}
+
+.turn-indicator{
+    margin-right:6%
+}
+
+.material-symbols-outlined{
+    width:3%;
+    color: var(--blue)
+}
+
+#card-title{
+    font-weight: bold;
+}
+
+.all-cards{
+    display:flex;
+    flex-wrap: wrap;
+    height:100%;
+    width:100%;
+    justify-content: center;
+}
+
+.description{
+    text-align: center;
+    width: 60%;
+    margin: auto;
+    padding:3% 0;
+    color: var(--card-text);
+}
+
+.description > span > br{
+    line-height: 10%;
+}
+
+.login-div, .register-div{
+    margin: 5% auto;
+    width: 30%;
+    text-align: center;
+    height: 190px;
+    width: 400px;
+    border-radius: 30px;
+    /* display: grid; */
+    box-shadow: 0px 1px 3px gray;
+}
+
+.register-div, .login-div{
+    display:flex;
+    flex-flow: column;
+}
+
+.register-div>form, .login-div>form{
+    height:70%;
+    display: grid;
+    grid-template-columns: max-content;
+    gap:2px;
+    margin: 0 10%;
+}
+
+.register-div>form>label, .login-div>form>label{
+    text-align: right;
+    padding-right: 10px;
+}
+
+.register-div>form>input, .login-div>form>input{
+    height: 30px;
+    width:100%;
+}
+
+.register-div>form>button, .login-div>form>button{
+    grid-column-start: 1;
+    grid-column-end: 3;
+    border-radius:10px;
+    border:0;
+    margin: 0 35%;
+}
+
+.login-div>form>button{
+    margin-bottom: 10px;
+}
+.login-div>.content{
+    height:30%
+}
+.register-div>.content{
+    height:20%
+}
+
+.login-div>.content>.alert, .register-div>.content>.alert{
+    padding:0;
+    margin:0;
+}
+
+.search-container{
+    text-align: center;
+    padding: 0 1%;
+}
+
+.search-bar > input{
+    border-radius: 8px;
+    border: 1px solid black;
+    padding:0 10px;
+}
+
+.search-bar{
+    display:inline-flex;
+}
+
+.search-bar > button{
+    display: flex;
+    background: none;
+    border: none;
+}
+
+.chart-div{
+    display:flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    grid-template-areas: 
+    'user leaderboard'
+    'computer leaderboard';
+    height:100%;
+    width:100%;
+    min-height: 650px;
+}
+
+#user-chart-area{
+    grid-area: user;
+    height:45%;
+    width:50%;
+    display:flex;
+    flex-direction: column;
+}
+
+#leaderboard-chart-area{
+    grid-area: leaderboard;
+    height:100%;
+    width:50%;
+    padding-left: 15px;
+}
+
+#computer-chart-area{
+    grid-area: computer;
+    height:45%;
+    width:50%;
+}
+
+.canvas-container{
+    height:80%
+}
+
+.user-info{
+    height:10%;
+    width:50%;
+    display:inline;
+}
+
+.win, .loss, .draw{
+    height:33%
+}
+
+.game-holder > .center > p{
+    font-size: smaller;
+    margin:0.5rem 0;
+    color: var(--blue);
+}
+
+.game-holder > .center > p>span{
+    font-size: medium;
+    width:15px;
+}
+
+.skill:hover{
+    background-color: var(--skill-hover);
+    cursor: pointer;
+}
+
+#menu-symbol{
+    display:none
+}
+
+@media (max-width:950px){
+    #menu-symbol{
+        display: block;
+        position: absolute;
+        right:0;
+        margin-right:4%;
+        z-index: 2;
+        cursor: pointer;
+    }
+
+    .menu-banner{
+        padding-top: 70px;
+        width: 100%;
+        display: grid;
+        position: absolute;
+        top: -400%;
+        background-color: var(--banner);
+        margin-right: 0;
+        box-shadow: 0px 5px 15px var(--banner);
+        height:400%;
+        transition: top 0.3s;
+        z-index: 1;
+    }
+
+    .menu-banner > a{
+        margin: 2% 0;
+        text-align: center;
+    }
+
+    .show-banner{
+        top:0%;
+        transition: top 0.3s;
+    }
+
+    .hide-title{
+        display:none;
+    }
+}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block links %}
+    <a href="{{url_for('index')}}">Home</a>
+    <a href="{{url_for('cards')}}">Cards</a>
+    {% if 'username' in session %}
+        <a href="{{url_for('stats')}}">Statistics</a>
+    {% endif %}
+{% endblock links %}
+
+{% block content %}
+<div class="description">
+    <h1>Overview</h1>
+    <span>
+        Top Trumps is a card game first published in 1978. 
+        Each card contains a list of numerical data, and the aim of the game 
+        is to compare these values to try to trump and win an opponent's card. 
+        A wide variety of different packs of Top Trumps has been published.
+        <br><br>
+    </span>
+    <h1>Gameplay</h1>
+    <span>
+
+        A pack of cards is based on a theme, such as cars, aircraft, books, 
+        boats, dinosaurs, or characters from a popular film or television 
+        series. Each card in the pack shows a list of numerical data about 
+        the item. For example, in a pack based on cars, each card shows a 
+        different model of car, and the stats and data may include its 
+        engine size, its weight, its length, and its top speed. If the theme 
+        is about a TV series or film, the cards include characters and the 
+        data varying from things like strength and bravery to fashion and 
+        looks, depending on the criteria.
+        <br><br>
+        All the cards are dealt among the players. There must be at least two 
+        players, and at least one card for each player. The starting player 
+        (normally the player to the dealer's left) selects a category from 
+        their topmost card and reads out its value. Each other player then 
+        reads out the value of the same category from their cards. The best 
+        (usually the largest, but in the case of a sports car's weight or a 
+        sprinter's 100m time, for instance, lower is considered better) value 
+        wins the "trick", and the winner takes all the cards of the trick and 
+        places them at the bottom of their pile. The winner then looks at their 
+        new topmost card, and chooses the category for the next round.
+        <br><br>
+        In the event of a draw the cards are placed in the center and a new 
+        category is chosen from the next card by the same person as in the 
+        previous round. The winner of that round obtains all of the cards in 
+        the center as well as the top card from each player.
+        <br><br>
+        Players are eliminated when they lose their last card, and the winner 
+        is the player who obtains the whole pack. Some variants of the rules 
+        allow 'three card pick', whereby a player who has only 3 cards remaining 
+        is allowed to choose any of their three cards to play with. Typically, 
+        this lengthens the game considerably.
+    </span>
+</div>
+{% endblock content %}
+    

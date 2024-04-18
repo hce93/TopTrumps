@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block links %}
+    <a href="{{url_for('about')}}">About</a>
+    <a href="{{url_for('cards')}}">Cards</a>
+    {% if 'username' in session %}
+        <a href="{{url_for('stats')}}">Statistics</a>
+    {% endif %}
+{% endblock links %}
+
+{% block content %}
+    <div id="home-div" class="center">
+        <p class="title" id="top-title">TOP</p>
+        <p class="title" id="bottom-title">TRUMPS</p>
+        {% if 'username' in session %}
+            <p>Welcome {{session['username']}}</p>
+            <a href="{{url_for('play')}}"><button class="btn btn-secondary">Play</button></a>
+        {% else %}
+            <a href="{{url_for('register')}}"><button class="btn btn-secondary">Register</button></a>
+            <a href="{{url_for('login')}}"><button class="btn btn-secondary">Login</button></a>
+        {% endif %}
+    </div>
+
+    
+{% endblock content %}
+    

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block links %}
+    <a href="{{url_for('index')}}">Home</a>
+    <a href="{{url_for('about')}}">About</a>
+    <a href="{{url_for('cards')}}">Cards</a>
+{% endblock links %}
+
+{% block content %}
+<div class="login-div">
+    <div class="content">
+        
+        {% with messages=get_flashed_messages()  %}
+            
+            {% if messages %}
+                {% for message in get_flashed_messages() %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+                <p>or to register click <a href="{{url_for('register')}}">here</a></p>
+            {% endif %}
+                
+        {% endwith %}
+            
+
+    </div>
+    <form method="post">
+        <label for="username">Username: </label>
+        <input type="text" name="username" id="username" autocomplete="username" placeholder="Username..." 
+            value="{{ request.form['username'] }}" required>
+        <label for="password">Password: </label>
+        <input  id="password" type="password" name="password" placeholder="Password..." required>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+{% endblock content %}
+    
